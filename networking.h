@@ -9,23 +9,26 @@
 #include <string.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <signal.h>
 
 #ifndef NETWORKING_H
 #define NETWORKING_H
 
 #define BUFFER_SIZE 256
-#define PORT "9001"
+#define PORT "9002"
 #define TEST_IP "127.0.0.1"
 
 void error_check(int i, char *s);
 int server_setup();
 int server_connect(int sd);
 int client_setup(char * server);
-
 /* if Login exists, login
  * else creates new username
  */
-void login();
+char * login();
+// select opponent from currently online users
+char * select_match(char * user);
+
 
 
 #endif
