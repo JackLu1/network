@@ -36,37 +36,53 @@ void subserver(int client_socket) {
 
 
 void login(){
-    // print all users
-
-    printf("LOGIN\n");
 
     // format each line: 
     // username pw
     FILE * logins = fopen("./user.txt", "a+");
     char * line;
     size_t len = 0;
-    ssize_t read;
     int line_num = 0;
+    ssize_t read;
 
     while( getline(&line, &len, logins) != -1){
         line_num++;
     }
     rewind(logins);
-    char ** users = calloc(1, line_num);
-    char ** pws = calloc(1, line_num);
+    char ** users = calloc(100, line_num);
+    char ** pws = calloc(100, line_num);
     printf("%i\n", line_num);
 
     int i = 0;
     printf("Users:\n-----------------------------\n");
-    while( read = getline(&line, &len, logins) != -1){
+    //while( read = getline(&line, &len, logins) != -1 ){
+    //    line[strcspn(line, "\n")] = 0;
+    //    printf("|%s|\n", line);
+    //    strcpy(strsep(&line, " "), users[i]);
+    //    strcpy(line, pws[i]);
+    //    i++;
+    //    //printf("usr: |%s|\n", strsep(&line, " "));
+    //    //printf("pw: |%s|\n", line);
+    //}
+    while( getline(&line, &len, logins) != -1){
         printf("got: %s", line);
+        printf("len: %ld\n", strlen(line));
         users[i] = strsep(&line, " ");
+        printf("line = %s\n", line);
         pws[i] = line;
+
         printf("user %s\n", users[i]);
         printf("pw %s\n", pws[i]);
         i++;
     }
     printf("------------------------------\n");
+
+    printf("TEST STUFF\n");
+
+    for (int a = 0; a < line_num; a++){
+        printf("u: %s\n", users[a]);
+        printf("p: %s\n\n", pws[a]);
+    }
 
     //-----------login--------------
 
@@ -98,25 +114,30 @@ void login(){
     } else{
         // user exists, login
         char * pw = (char*)malloc(100*sizeof(char));
-        printf("user: %s\n", name);
-        printf("correct pw: %s\n", users[i]);
+        printf("\n\nuser: %s\n", name);
+        printf("correct pw: %s\n\n", pws[i]);
+
+
         while(1){
             printf("enter pw: ");
             fgets(pw,100,stdin);
-            pw[strlen(name)-1] = '\0';
+            pw[strlen(pw)-1] = '\0';
             printf("entered pw |%s|\n", pw);
             if (strcmp(pw, pws[i]) == 0){
                 //pws match
+                printf("correct\n");
                 break;
             }
             else {
-                printf("Wrong pw, try again: ");
+                printf("Wrong pw, try again\n");
             }
         }
     }
 
 
     printf("login end\n");
+    //return name;
+    return "a";
 }
 
 void process(char * s) {
