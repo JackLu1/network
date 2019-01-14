@@ -10,9 +10,20 @@ int main(int argc, char **argv) {
     else
         server_socket = client_setup( TEST_IP );
 
+    //get user
     char * user = login();
-    char * opponent = select_match(user);
-    write(server_socket, opponent, sizeof(opponent));
+    write(server_socket, user, sizeof(user));
+    //choose actoin
+    int choice = searching(user);
+    printf("CHOCIE = %d\n", choice);
+    //get opponent
+    if (choice){
+        char * opponent = select_match(user);
+        write(server_socket, opponent, sizeof(opponent));
+    } else {
+        printf(" not choosing\n");
+        write(server_socket, "-1", sizeof("-1"));
+    }
     while (1) {
         printf("enter data: ");
         fgets(buffer, sizeof(buffer), stdin);
@@ -21,6 +32,60 @@ int main(int argc, char **argv) {
         read(server_socket, buffer, sizeof(buffer));
         printf("received: [%s]\n", buffer);
     }
+}
+
+
+char * select_match(char * user){
+    FILE * online = fopen("./online.txt", "a+");
+    char * line;
+    char * opponent = (char*)malloc(100*sizeof(char));
+    size_t len = 0;
+
+    int size = 0;
+    while( getline(&line, &len, online) != -1){
+        size++;
+    }
+    rewind(online);
+
+    printf("size %i\n", size);
+    if (size == 1){
+        printf("No opponents currently online, please wait for one\n");
+        return "-1";
+    }
+
+    rewind(online);
+    printf("--------ONLINE USERS---------\n");
+    while( getline(&line, &len, online) != -1){
+        printf("%s\n", line);
+    }
+    rewind(online);
+    printf("-----------------------------\n");
+
+    printf("Enter opponent: ");
+    fgets(opponent,100,stdin);
+    opponent[strlen(opponent)-1] = '\0';
+    printf("opp: %s\n", opponent);
+
+    while (strcmp(opponent, user) == 0){
+        printf("cant enter yourself\n");
+        printf("Enter opponent: ");
+        fgets(opponent,100,stdin);
+        opponent[strlen(opponent)-1] = '\0';
+        printf("opp: %s\n", opponent);
+    }
+
+    return opponent;
+}
+
+int searching(char * user){
+    // pipe with user
+    //mkfifo(user, 0655);
+    char * choice = malloc(3);
+    printf("Enter 0 to wait for game or 1 to connect to opponent: ");
+    fgets(choice,3,stdin);
+    int a = atoi(choice);
+    printf("A = %d\n", a);
+    return a;
 }
 
 char * login(){
@@ -108,41 +173,10 @@ char * login(){
 
     fclose(logins);
     FILE * online = fopen("./online.txt", "a+");
-    printf("name: |%s\n", name);
+    printf("name: %s\n", name);
     fprintf(online, "%s\n", name);
     fclose(online);
 
     printf("login end\n");
     return name;
-}
-
-char * select_match(char * user){
-    FILE * online = fopen("./online.txt", "a+");
-    char * line;
-    char * opponent = (char*)malloc(100*sizeof(char));
-    size_t len = 0;
-    int line_num = 0;
-
-    printf("--------ONLINE USERS---------\n");
-    while( getline(&line, &len, online) != -1){
-        printf("%s\n", line);
-        line_num++;
-    }
-    rewind(online);
-    printf("-----------------------------\n");
-
-    printf("Enter opponent: ");
-    fgets(opponent,100,stdin);
-    opponent[strlen(opponent)-1] = '\0';
-    printf("opp: %s\n", opponent);
-
-    while (strcmp(opponent, user) == 0){
-        printf("cant enter yourself\n");
-        printf("Enter opponent: ");
-        fgets(opponent,100,stdin);
-        opponent[strlen(opponent)-1] = '\0';
-        printf("opp: %s\n", opponent);
-    }
-
-    return opponent;
 }
