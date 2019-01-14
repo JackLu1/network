@@ -49,12 +49,12 @@ void login(){
         line_num++;
     }
     rewind(logins);
-    char ** users = calloc(100, line_num);
-    char ** pws = calloc(100, line_num);
+    char ** users = calloc(line_num, 100);
+    char ** pws = calloc(line_num, 100);
     printf("%i\n", line_num);
 
-    int i = 0;
-    printf("Users:\n-----------------------------\n");
+    //int i = 0;
+    //printf("Users:\n-----------------------------\n");
     //while( read = getline(&line, &len, logins) != -1 ){
     //    line[strcspn(line, "\n")] = 0;
     //    printf("|%s|\n", line);
@@ -65,24 +65,14 @@ void login(){
     //    //printf("pw: |%s|\n", line);
     //}
     while( getline(&line, &len, logins) != -1){
-        printf("got: %s", line);
+        line[strcspn(line, "\n")] = 0;
+        printf("got: |%s|", line);
         printf("len: %ld\n", strlen(line));
-        users[i] = strsep(&line, " ");
         printf("line = %s\n", line);
-        pws[i] = line;
-
-        printf("user %s\n", users[i]);
-        printf("pw %s\n", pws[i]);
-        i++;
+        printf("user |%s|\n", strsep(&line, " "));
+        printf("pw |%s|\n", line);
     }
-    printf("------------------------------\n");
-
-    printf("TEST STUFF\n");
-
-    for (int a = 0; a < line_num; a++){
-        printf("u: %s\n", users[a]);
-        printf("p: %s\n\n", pws[a]);
-    }
+    rewind(logins);
 
     //-----------login--------------
 
@@ -92,13 +82,21 @@ void login(){
     printf("Name: ");
     fgets(name,100,stdin);
     name[strlen(name)-1] = '\0';
-    for (i = 0; i < line_num; i++){
-        if (strcmp(name, users[i]) == 0){
-            // User already exists 
+
+    while( getline(&line, &len, logins) != -1){
+        if (strcmp( name, strsep(&line, " ") ) == 0){
             new = 0;
             break;
-        } 
+        }
     }
+    rewind(logins);
+    //for (i = 0; i < line_num; i++){
+    //    if (strcmp(name, users[i]) == 0){
+    //        // User already exists 
+    //        new = 0;
+    //        break;
+    //    } 
+    //}
     printf("New? %i\n", new);
     if (new){
         // Create new user and set pw
@@ -115,7 +113,6 @@ void login(){
         // user exists, login
         char * pw = (char*)malloc(100*sizeof(char));
         printf("\n\nuser: %s\n", name);
-        printf("correct pw: %s\n\n", pws[i]);
 
 
         while(1){
@@ -123,21 +120,28 @@ void login(){
             fgets(pw,100,stdin);
             pw[strlen(pw)-1] = '\0';
             printf("entered pw |%s|\n", pw);
-            if (strcmp(pw, pws[i]) == 0){
-                //pws match
-                printf("correct\n");
-                break;
-            }
-            else {
-                printf("Wrong pw, try again\n");
-            }
+            //while( getline(&line, &len, logins) != -1){
+            //    if (strcmp( name, strsep(&line, " ") ) == 0){
+            //        new = 0;
+            //        break;
+            //    }
+            //}
+            //rewind(logins);
+            //if (strcmp(pw, pws[i]) == 0){
+            //    //pws match
+            //    printf("correct\n");
+            //    break;
+            //}
+            //else {
+            //    printf("Wrong pw, try again\n");
+            //}
         }
     }
 
 
     printf("login end\n");
     //return name;
-    return "a";
+    //return "a";
 }
 
 void process(char * s) {
