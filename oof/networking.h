@@ -8,6 +8,7 @@
 #include <netdb.h>
 #include <string.h>
 #include <errno.h>
+#include <fcntl.h>
 
 #ifndef NETWORKING_H
 #define NETWORKING_H
